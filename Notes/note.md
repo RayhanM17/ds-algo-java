@@ -107,6 +107,14 @@ for all 0 < a < N or no solutions
 
 #### The P Word
 
+The best way to prove a theorem is false is through proof by induction and by contradiction.
+
+##### Proof by Induction review
+
+First step is proving the base case. The second step is the inductive hypothesis. This means the theorem is true is true for all cases up to some limit k.
+
+
+
 
 ## CH 2 Algorithmn Analysis
 
