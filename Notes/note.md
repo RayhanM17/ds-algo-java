@@ -111,12 +111,20 @@ The best way to prove a theorem is false is through proof by induction and by co
 
 ##### Proof by Induction review
 
-First step is proving the base case. The second step is the inductive hypothesis. This means the theorem is true is true for all cases up to some limit k.
+First step is proving the base case. The second step is the inductive hypothesis. This means the theorem is true is true for all cases up to some limit k. Then you do the induction step which proves that the hypothesis works for all equations.
+
+![](../Assets/inductionWork.png)
+
+Alternative Strategy
+
+
+##### Proof by Contradiction review
 
 
 
 
 ## CH 2 Algorithmn Analysis
+
 
 ### 2.1 Mathematical Background
 
