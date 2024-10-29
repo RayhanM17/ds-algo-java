@@ -29,6 +29,26 @@ public class App {
         root.right.right = new BinaryNode<>(10);
 
         System.out.println(countGreaterThanValue(root, 4));
+
+        // Creating a sample binary tree:
+        //         1
+        //       /   \
+        //      2     2
+        //     / \   / \
+        //    3   4 4   3
+
+        BinaryNode<Integer> symmetricRoot = new BinaryNode<>(1);
+        symmetricRoot.left = new BinaryNode<>(2);
+        symmetricRoot.right = new BinaryNode<>(2);
+        symmetricRoot.left.left = new BinaryNode<>(3);
+        symmetricRoot.left.right = new BinaryNode<>(4);
+        symmetricRoot.right.left = new BinaryNode<>(4);
+        symmetricRoot.right.right = new BinaryNode<>(3);
+
+        System.out.println(isSymmetric(symmetricRoot)); // Expected: true
+        System.out.println(isSymmetric(root)); // Expected: false
+
+        System.out.println(removeLeaves(symmetricRoot));
     }
 
     public static char findDistinguishingChar(String word1, String word2) {
@@ -111,5 +131,40 @@ public class App {
         count += countGreaterThanValue(root.right, value);
 
         return count;
+    }
+
+    public static boolean isSymmetric(BinaryNode<Integer> root) {
+        if (root == null) {
+            return true; // An empty tree is symmetric
+        }
+        return isMirror(root.left, root.right);
+    }
+
+    private static boolean isMirror(BinaryNode<Integer> left, BinaryNode<Integer> right) {
+        if (left == null && right == null) {
+            return true;
+        }
+        if (left == null || right == null) {
+            return false;
+        }
+        // Check if the values are equal and the left subtree of left node is a mirror of the right subtree of the right node, and vice versa
+        return (left.element == right.element) && isMirror(left.left, right.right) && isMirror(left.right, right.left);
+    }
+
+    public static BinaryNode removeLeaves(BinaryNode root) {
+        if (root == null) {
+            return null;
+        }
+        
+        // Check if the current node is a leaf
+        if (root.left == null && root.right == null) {
+            return null; // Remove the leaf node by returning null
+        }
+        
+        // Recursively remove leaves from left and right subtrees
+        root.left = removeLeaves(root.left);
+        root.right = removeLeaves(root.right);
+        
+        return root; // Return the updated root node
     }
 }
