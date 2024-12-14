@@ -1,82 +1,95 @@
 package com.rayhanm17;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public class App {
 
-    public static void main(String[] args) {
-        int[] list1 = {3, 5, 8, 9};
-        int[] list2 = {2, 6, 10, 12};
-
-        System.out.println(One.findMedian(list1, list2));
-
-        // Example usage
-        HashMap<String, List<String>> bridges = new HashMap<>();
-        bridges.put("A", List.of("B", "C"));
-        bridges.put("B", List.of("A", "D"));
-        bridges.put("C", List.of("A"));
-        bridges.put("D", List.of("B"));
-
-        System.out.println(Two.canTravel(bridges, "A", "D")); // true
-        System.out.println(Two.canTravel(bridges, "A", "E")); // false
-
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
-
-        try {
-            Three.findCourseOrder("./src/main/java/com/rayhanm17/prerequisites.txt");
-        } catch (IOException e) {
-            System.err.println("Error reading the file: " + e.getMessage());
+public class App{
+    public static class Vertex implements Comparable<Vertex>{
+        public String name;
+        public int indegree;
+        public int topNum;
+        @Override
+        public int hashCode() {
+            return name.hashCode();
         }
-
-        // Example courses and prerequisites
-        HashMap<Vertex, Set<Vertex>> graph = new HashMap<>();
-        Map<String, Vertex> vertexMap = new HashMap<>();
-
-        // Sample vertices (courses)
-        Vertex v1 = new Vertex("COP2210");
-        Vertex v2 = new Vertex("COP3337");
-        Vertex v3 = new Vertex("COT3100");
-        Vertex v4 = new Vertex("COP3530");
-        Vertex v5 = new Vertex("COP4338");
-        Vertex v6 = new Vertex("COP4226");
-        Vertex v7 = new Vertex("COP4610");
-        Vertex v8 = new Vertex("CDA3102");
-
-        vertexMap.put(v1.name, v1);
-        vertexMap.put(v2.name, v2);
-        vertexMap.put(v3.name, v3);
-        vertexMap.put(v4.name, v4);
-        vertexMap.put(v5.name, v5);
-        vertexMap.put(v6.name, v6);
-        vertexMap.put(v7.name, v7);
-        vertexMap.put(v8.name, v8);
-
-        // Add edges representing prerequisites (from -> to)
-        // For simplicity, we'll add edges in both directions manually here
-        addEdge(v1, v2, graph); // COP2210 -> COP3337
-        addEdge(v2, v4, graph); // COP3337 -> COP3530
-        addEdge(v3, v1, graph); // COT3100 -> COP2210
-        addEdge(v4, v5, graph); // COP3530 -> COP4338
-        addEdge(v5, v6, graph); // COP4338 -> COP4226
-        addEdge(v4, v7, graph); // COP3530 -> COP4610
-        addEdge(v7, v8, graph); // COP4610 -> CDA3102
-
-        // Create an array of courses for easy processing
-        Vertex[] vertices = new Vertex[] { v1, v2, v3, v4, v5, v6, v7, v8 };
-
-        // Perform BFS traversal and get the order
-        Four.getOrderAndPrintBFS(graph, vertices);
+        @Override
+        public boolean equals(Object o) {
+            Vertex another = (Vertex) o;
+            return this.name.equals(another.name);
+        }
+        @Override
+        public String toString() {
+            return name;
+        }
+        public Vertex(String name) {
+            this.name = name;
+            this.indegree = 0;
+            this.topNum = -1;
+        }
+        @Override
+        public int compareTo(Vertex other){
+            return this.topNum - other.topNum;
+        }
     }
-
-    private static void addEdge(Vertex from, Vertex to, HashMap<Vertex, Set<Vertex>> graph) {
+    private static void addEdge(Vertex from, Vertex to, Map<Vertex, Set<Vertex>> graph) {
+        //Adding edge from--to
         if (!graph.containsKey(from))
             graph.put(from, new HashSet<Vertex>());
+        if (!graph.containsKey(to))
+            graph.put(to, new HashSet<Vertex>());
         graph.get(from).add(to);
         to.indegree++;
     }
+    public static void kahns_topsort(Map<Vertex, Set<Vertex>> dag) throws Exception {
+        int counter = 0;
+        Queue<Vertex> queue = new LinkedList<>();
+        for (Vertex v : dag.keySet())
+            if (v.indegree == 0)
+                queue.add(v);
+        while (!queue.isEmpty()) {
+            Vertex v = queue.remove();
+            v.topNum = counter++;
+            for (Vertex neighbor : dag.get(v)) {
+                neighbor.indegree--;
+                if (neighbor.indegree == 0)
+                    queue.add(neighbor);
+            }
+        }
+        for(Vertex v: dag.keySet())
+            if(v.topNum == -1)
+                throw new Exception("Given graph contains a cycle!");
+        List<Vertex> allVertices = new ArrayList();
+        for(Vertex v: dag.keySet())
+            allVertices.add(v);
+        Collections.sort(allVertices);
+        System.out.println("Topological sort: " + allVertices);
+
+    }
+    public static void addEdges(Vertex[] vertex, String[] edges,
+                                Map<Vertex,Set<Vertex>> graph, boolean directed){
+        for(String edge: edges){
+            int first = Integer.parseInt(edge.substring(0, edge.indexOf(',')));
+            int second = Integer.parseInt(edge.substring(edge.indexOf(',')+1));
+            addEdge(vertex[first], vertex[second], graph);
+            if(!directed)
+                addEdge(vertex[second], vertex[first], graph);
+        }
+    }
+    public static void main(String[] args) {
+        Map<Vertex, Set<Vertex>> dag = new HashMap<>();
+        Vertex[] vertex = new Vertex[5];
+        for(int i = 0; i < 5;i++)
+            vertex[i] = new Vertex(i + "");
+        String[] edges = new String[]{
+        "0,1", "0,2", "0,3", "0,4", 
+        "1,3", "2,3", "2,4", "3,4"
+        };
+        addEdges(vertex, edges, dag, true);//adding all edges
+        try{
+            kahns_topsort(dag);
+        }catch(Exception exp){
+            System.out.println("Error: Loop detected in DAG!");
+            System.exit(1);
+        }
+   }
 }
