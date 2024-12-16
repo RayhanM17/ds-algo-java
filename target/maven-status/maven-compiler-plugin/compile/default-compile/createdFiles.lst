@@ -1,2 +1,6 @@
+com/rayhanm17/IslandBridgeBuilder.class
+com/rayhanm17/Vertex.class
+com/rayhanm17/BinaryNode.class
+com/rayhanm17/IslandBridgeBuilder$UnionFind.class
+com/rayhanm17/IslandBridgeBuilder$Edge.class
 com/rayhanm17/App.class
-com/rayhanm17/App$Vertex.class
